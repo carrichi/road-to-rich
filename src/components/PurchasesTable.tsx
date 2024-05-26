@@ -1,13 +1,19 @@
-import { FaceSmileIcon, HandRaisedIcon, HandThumbDownIcon, HomeIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline"
-import { SetStateAction, useEffect, useState } from "react"
+import {
+  FaceSmileIcon,
+  HandRaisedIcon,
+  HandThumbDownIcon,
+  HomeIcon,
+  QuestionMarkCircleIcon,
+} from '@heroicons/react/24/outline';
+import { SetStateAction, useEffect, useState } from 'react';
 
-const host = import.meta.env.VITE_BACKEND_HOST
+const HOST = import.meta.env.VITE_BACKEND_HOST;
 const USDollar = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
-})
-const formatDateToISO = (timestamp : string) => {
-  const months : {[key: number]: string} = {
+});
+const formatDateToISO = (timestamp: string) => {
+  const months: { [key: number]: string } = {
     1: 'Jan',
     2: 'Feb',
     3: 'Mar',
@@ -20,41 +26,57 @@ const formatDateToISO = (timestamp : string) => {
     10: 'Oct',
     11: 'Nov',
     12: 'Dic',
-  }
-  const date = new Date(timestamp)
-  return date.getDate() + '/' + months[date.getMonth()] + '/' + date.getFullYear()
-}
+  };
+  const date = new Date(timestamp);
+  return (
+    date.getDate() + '/' + months[date.getMonth()] + '/' + date.getFullYear()
+  );
+};
 const category_icons = {
-  'HOME': HomeIcon,
-  'PERSONAL': FaceSmileIcon,
-  'EMERGENCY': HandRaisedIcon,
-  'SKIPPEABLE': HandThumbDownIcon,
-  'OTHER': QuestionMarkCircleIcon
-}
+  HOME: HomeIcon,
+  PERSONAL: FaceSmileIcon,
+  EMERGENCY: HandRaisedIcon,
+  SKIPPEABLE: HandThumbDownIcon,
+  OTHER: QuestionMarkCircleIcon,
+};
 
 export default function PurchasesTable() {
-  const [purchases, SetPurchases] = useState<any[]>([])
+  const [purchases, SetPurchases] = useState<any[]>([]);
 
   const getPurchases = async () => {
-    const purchases = await fetch(`${host}/purchases`).then(res => res.json())
-    const display_data: SetStateAction<any[]> = []
-    purchases.map((purchase: { category: any }) => display_data.push({
-      ...purchase,
-      category_icon: category_icons[purchase.category ? purchase.category : 'OTHER'],
-    }))
-    console.log(display_data)
-    SetPurchases(display_data)
-  }
+    let res;
+    try {
+      res = await fetch(`${HOST}/purchases`);
+      const purchases = await res.json();
+      const display_data: SetStateAction<any[]> = [];
+      purchases.map((purchase: { category: any }) =>
+        display_data.push({
+          ...purchase,
+          category_icon:
+            category_icons[purchase.category ? purchase.category : 'OTHER'],
+        }),
+      );
+      console.log(display_data);
+      SetPurchases(display_data);
+    } catch (error) {
+      console.log('Send alert!');
+    }
+  };
 
-  useEffect(() => { getPurchases() }, [])
+  useEffect(() => {
+    getPurchases();
+  }, []);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
-          <h1 className="text-base font-semibold leading-6 text-gray-900">Purchases</h1>
+          <h1 className="text-base font-semibold leading-6 text-gray-900">
+            Purchases
+          </h1>
           <p className="mt-2 text-sm text-gray-700">
-            A list of all of your purchases in your account including their name, amount and status.
+            A list of all of your purchases in your account including their
+            name, amount and status.
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -72,19 +94,34 @@ export default function PurchasesTable() {
             <table className="min-w-full divide-y divide-gray-300">
               <thead>
                 <tr>
-                  <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                  <th
+                    scope="col"
+                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                  >
                     Name
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  <th
+                    scope="col"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
                     Amount
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  <th
+                    scope="col"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
                     Status
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  <th
+                    scope="col"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
                     Applied At
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  <th
+                    scope="col"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
                     Deadline
                   </th>
                   <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-0">
@@ -102,32 +139,43 @@ export default function PurchasesTable() {
                           <purchase.category_icon />
                         </div>
                         <div className="ml-4">
-                          <div className="font-medium text-gray-900">{purchase.concept}</div>
-                          <div className="mt-1 text-gray-500">{purchase.notes}</div>
+                          <div className="font-medium text-gray-900">
+                            {purchase.concept}
+                          </div>
+                          <div className="mt-1 text-gray-500">
+                            {purchase.notes}
+                          </div>
                         </div>
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                      <div className="text-gray-900">{USDollar.format(purchase.amount)}</div>
-                      <div className="mt-1 text-gray-500">{purchase.payment_method}</div>
+                      <div className="text-gray-900">
+                        {USDollar.format(purchase.amount)}
+                      </div>
+                      <div className="mt-1 text-gray-500">
+                        {purchase.payment_method}
+                      </div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                       <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                         Active
                       </span>
                     </td>
-                    <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">{
-                      purchase.applied_at
-                      ? formatDateToISO(purchase.applied_at)
-                      : ''
-                    }</td>
-                    <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">{
-                      purchase.deadline
-                      ? formatDateToISO(purchase.deadline)
-                      : ''
-                    }</td>
+                    <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                      {purchase.applied_at
+                        ? formatDateToISO(purchase.applied_at)
+                        : ''}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                      {purchase.deadline
+                        ? formatDateToISO(purchase.deadline)
+                        : ''}
+                    </td>
                     <td className="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                      <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                      <a
+                        href="#"
+                        className="text-indigo-600 hover:text-indigo-900"
+                      >
                         Edit
                       </a>
                     </td>
@@ -139,5 +187,5 @@ export default function PurchasesTable() {
         </div>
       </div>
     </div>
-  )
+  );
 }
