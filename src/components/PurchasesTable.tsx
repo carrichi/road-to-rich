@@ -4,10 +4,13 @@ import {
   HandThumbDownIcon,
   HomeIcon,
   QuestionMarkCircleIcon,
+  TruckIcon,
 } from '@heroicons/react/24/outline';
-import { SetStateAction, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import PurchaseDetails from './purchases/details';
+import { BACKEND_HOST } from '../constants/enviroment';
+import Delayed from './misc/delayed';
 
-const HOST = import.meta.env.VITE_BACKEND_HOST;
 const USDollar = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
@@ -33,11 +36,12 @@ const formatDateToISO = (timestamp: string) => {
   );
 };
 const category_icons = {
-  HOME: HomeIcon,
-  PERSONAL: FaceSmileIcon,
-  EMERGENCY: HandRaisedIcon,
-  SKIPPEABLE: HandThumbDownIcon,
-  OTHER: QuestionMarkCircleIcon,
+  HOME: <HomeIcon />,
+  PERSONAL: <FaceSmileIcon />,
+  TRAVEL: <TruckIcon />,
+  EMERGENCY: <HandRaisedIcon />,
+  SKIPPEABLE: <HandThumbDownIcon />,
+  OTHER: <QuestionMarkCircleIcon />,
 };
 
 export default function PurchasesTable() {
@@ -46,21 +50,25 @@ export default function PurchasesTable() {
   const getPurchases = async () => {
     let res;
     try {
-      res = await fetch(`${HOST}/purchases`);
+      res = await fetch(`${BACKEND_HOST}/purchases`);
       const purchases = await res.json();
-      const display_data: SetStateAction<any[]> = [];
-      purchases.map((purchase: { category: any }) =>
-        display_data.push({
-          ...purchase,
-          category_icon:
-            category_icons[purchase.category ? purchase.category : 'OTHER'],
-        }),
-      );
-      console.log(display_data);
-      SetPurchases(display_data);
+      // console.log(purchases);
+      SetPurchases(purchases);
     } catch (error) {
       console.log('Send alert!');
     }
+  };
+
+  const [openDetails, SetOpenDetails] = useState(false);
+  const [purchaseSelected, SetPurchaseSelected] = useState(null);
+  const editHandle = (event: any) => {
+    SetPurchaseSelected(event.target.getAttribute('id'));
+    SetOpenDetails(true);
+  };
+
+  const handleClose = () => {
+    SetOpenDetails(false);
+    SetPurchaseSelected(null);
   };
 
   useEffect(() => {
@@ -135,8 +143,11 @@ export default function PurchasesTable() {
                     <td className="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
                       <div className="flex items-center">
                         <div className="h-11 w-11 flex-shrink-0">
-                          {/* <img className="h-11 w-11 rounded-full" src={purchase.id} alt="" /> */}
-                          <purchase.category_icon />
+                          {
+                            category_icons[
+                              purchase.category ? purchase.category : 'OTHER'
+                            ]
+                          }
                         </div>
                         <div className="ml-4">
                           <div className="font-medium text-gray-900">
@@ -172,17 +183,27 @@ export default function PurchasesTable() {
                         : ''}
                     </td>
                     <td className="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                      <a
-                        href="#"
+                      <button
+                        type="button"
+                        id={purchase.id}
+                        key={purchase.id}
+                        onClick={editHandle}
                         className="text-indigo-600 hover:text-indigo-900"
                       >
                         Edit
-                      </a>
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            {openDetails && (
+              <PurchaseDetails
+                state={openDetails}
+                callback={handleClose}
+                data={purchaseSelected}
+              />
+            )}
           </div>
         </div>
       </div>
