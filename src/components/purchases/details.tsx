@@ -17,7 +17,7 @@ export default function PurchaseDetails(props: {
   const { state, callback, data } = props;
   const [open, setOpen] = useState(state);
   const [purchase, setPurchase] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [_, setLoading] = useState(true);
   const [concept, setConcept] = useState(undefined);
   const [amount, setAmount] = useState(undefined);
   const [notes, setNotes] = useState(undefined);

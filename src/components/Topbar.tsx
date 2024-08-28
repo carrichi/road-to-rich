@@ -16,7 +16,7 @@ export default function Topbar(props: {
   showSideBar: boolean;
   setShowSideBar: Dispatch<SetStateAction<boolean>>;
 }) {
-  const { showSideBar, setShowSideBar } = props;
+  const { setShowSideBar } = props;
   return (
     <>
       {/* Navbar */}
