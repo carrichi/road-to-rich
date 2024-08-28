@@ -1,35 +1,88 @@
 import {
+  BanknotesIcon,
   CalendarIcon,
+  ChartBarIcon,
   ChartPieIcon,
   Cog6ToothIcon,
   DocumentDuplicateIcon,
-  HomeIcon,
-  UsersIcon,
+  ShoppingBagIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment, useState } from 'react';
+import { Fragment, useContext, useState } from 'react';
 import { classNames } from '../utils';
+import { ContentContext } from '../App';
+import PurchasesTable from './purchases';
+import Dashboard from './dashboard';
+import Calendar from './calendar';
+import Budget from './budget';
+import BankStatements from './bank_statements';
+import Reports from './reports';
 
 const navigation = [
-  { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
-  { name: 'Purchases', href: '#', icon: UsersIcon, current: false },
-  { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
   {
+    key: 'DASHBOARD',
+    name: 'Dashboard',
+    href: '#',
+    icon: ChartPieIcon,
+    current: true,
+    content: <Dashboard />,
+  },
+  {
+    key: 'BUDGET',
+    name: 'Budget',
+    href: '#',
+    icon: BanknotesIcon,
+    current: false,
+    content: <Budget />,
+  },
+  {
+    key: 'PURCHASES',
+    name: 'Purchases',
+    href: '#',
+    icon: ShoppingBagIcon,
+    current: false,
+    content: <PurchasesTable />,
+  },
+  {
+    key: 'CALENDAR',
+    name: 'Calendar',
+    href: '#',
+    icon: CalendarIcon,
+    current: false,
+    content: <Calendar />,
+  },
+  {
+    key: 'BANK_STATEMENTS',
     name: 'Bank Statements',
     href: '#',
     icon: DocumentDuplicateIcon,
     current: false,
+    content: <BankStatements />,
   },
-  { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
+  {
+    key: 'REPORTS',
+    name: 'Reports',
+    href: '#',
+    icon: ChartBarIcon,
+    current: false,
+    content: <Reports />,
+  },
 ];
-// const teams = [
-//   { id: 1, name: 'Heroicons', href: '#', initial: 'H', current: false },
-//   { id: 2, name: 'Tailwind Labs', href: '#', initial: 'T', current: false },
-//   { id: 3, name: 'Workcation', href: '#', initial: 'W', current: false },
-// ];
 export default function Sidebar() {
   const [SidebarOpen, setSidebarOpen] = useState(false);
+  const { setMainContent } = useContext(ContentContext);
+  const [currentSection, setCurrentSection] = useState<string>();
+
+  const handleClick = (key: string) => {
+    navigation.map((section) => (section.current = section.key === key));
+    if (currentSection !== key) {
+      setCurrentSection(key);
+      const sectionSelected = navigation.find((section) => section.key === key);
+      setMainContent(sectionSelected?.content);
+    }
+    setSidebarOpen(false);
+  };
 
   return (
     <>
@@ -164,7 +217,7 @@ export default function Sidebar() {
           </div>
         </Dialog>
       </Transition.Root>
-      <aside className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+      <aside className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-60 lg:flex-col">
         {/* Sidebar component, swap this element with another sidebar if you like */}
         <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-4">
           <div className="flex h-16 shrink-0 items-center">
@@ -188,6 +241,7 @@ export default function Sidebar() {
                             : 'text-gray-400 hover:text-white hover:bg-gray-800',
                           'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold',
                         )}
+                        onClick={() => handleClick(item.key)}
                       >
                         <item.icon
                           className="h-6 w-6 shrink-0"

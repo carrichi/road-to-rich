@@ -1,11 +1,11 @@
 import { createContext, Dispatch, SetStateAction, useState } from 'react';
 import Sidebar from './components/Sidebar';
-import PurchasesTable from './components/PurchasesTable';
 import Topbar from './components/Topbar';
+import Dashboard from './components/dashboard';
 
 interface mainContentContextValue {
   mainContent: JSX.Element | null;
-  setMainContent: Dispatch<SetStateAction<JSX.Element | null>>;
+  setMainContent: Dispatch<SetStateAction<JSX.Element>>;
 }
 export const ContentContext = createContext<
   mainContentContextValue | undefined
@@ -13,31 +13,30 @@ export const ContentContext = createContext<
 
 interface sideBarContextValue {
   showSideBar: boolean | null;
-  setshowSideBar: Dispatch<SetStateAction<JSX.Element | null>>;
+  setShowSideBar: Dispatch<SetStateAction<boolean>>;
 }
-export const sideBarContext = createContext<sideBarContextValue | undefined>(
+export const SideBarContext = createContext<sideBarContextValue | undefined>(
   undefined,
 );
 
 function App() {
   const [showSideBar, setShowSideBar] = useState(false);
+  const [mainContent, setMainContent] = useState(<Dashboard />);
 
   return (
     <>
-      {/* Static sidebar for desktop */}
-      <Sidebar />
-      <Topbar showSideBar={showSideBar} setShowSideBar={setShowSideBar} />
-      <div className="lg:pl-72">
-        {/* Main section */}
-        <section className="py-10">
-          <div className="px-4 sm:px-6 lg:px-8">
-            {
-              /* Your content */
-              <PurchasesTable />
-            }
+      <ContentContext.Provider value={{ mainContent, setMainContent }}>
+        <SideBarContext.Provider value={{ showSideBar, setShowSideBar }}>
+          <Topbar showSideBar={showSideBar} setShowSideBar={setShowSideBar} />
+          <Sidebar />
+          <div className="lg:pl-60">
+            {/* Main section */}
+            <section className="py-10">
+              <div className="px-4 sm:px-6 lg:px-8">{mainContent}</div>
+            </section>
           </div>
-        </section>
-      </div>
+        </SideBarContext.Provider>
+      </ContentContext.Provider>
     </>
   );
 }
