@@ -7,9 +7,8 @@ import {
   TruckIcon,
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
-import PurchaseDetails from './purchases/details';
-import { BACKEND_HOST } from '../constants/enviroment';
-import Delayed from './misc/delayed';
+import PurchaseDetails from './details';
+import { BACKEND_HOST } from '../../constants/enviroment';
 
 const USDollar = new Intl.NumberFormat('en-US', {
   style: 'currency',
