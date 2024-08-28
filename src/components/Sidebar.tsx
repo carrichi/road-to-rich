@@ -71,7 +71,7 @@ const navigation = [
 ];
 export default function Sidebar() {
   const [SidebarOpen, setSidebarOpen] = useState(false);
-  const { setMainContent } = useContext(ContentContext);
+  const { setMainContent } = useContext(ContentContext) as any;
   const [currentSection, setCurrentSection] = useState<string>();
 
   const handleClick = (key: string) => {

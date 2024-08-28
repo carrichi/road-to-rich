@@ -16,7 +16,7 @@ export default function PurchaseDetails(props: {
 }) {
   const { state, callback, data } = props;
   const [open, setOpen] = useState(state);
-  const [purchase, setPurchase] = useState(null);
+  const [purchase, setPurchase] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [concept, setConcept] = useState(undefined);
   const [amount, setAmount] = useState(undefined);
@@ -57,7 +57,6 @@ export default function PurchaseDetails(props: {
     try {
       res = await fetch(`${BACKEND_HOST}/purchases/${id}`);
       const purchase = await res.json();
-      console.log(purchase);
       setPurchase(purchase);
       setLoading(false);
     } catch (error) {
@@ -82,11 +81,11 @@ export default function PurchaseDetails(props: {
 
   useEffect(() => {
     if (purchase != null) {
-      form.concept.set(purchase?.concept);
-      form.amount.set(purchase?.amount);
-      form.notes.set(purchase?.notes);
-      form.status.set(purchase?.status);
-      form.category.set(purchase?.category);
+      form.concept.set(purchase.concept);
+      form.amount.set(purchase.amount);
+      form.notes.set(purchase.notes);
+      form.status.set(purchase.status);
+      form.category.set(purchase.category);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [purchase]);
